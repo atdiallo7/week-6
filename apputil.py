@@ -40,20 +40,20 @@ class Genius:
 
     def _get(self, path, params=None):
         """
-        Make a GET request to the Genius API and return the 'response' part
-        of the JSON payload.
+        Make a GET request to the Genius API and return the full JSON
+        payload as a dictionary.
         """
         response = requests.get(self.BASE_URL + path,
                                 headers=self._headers(),
                                 params=params,
                                 timeout=10)
         response.raise_for_status()
-        return response.json()["response"]
+        return response.json()
 
     def search(self, search_term, per_page=15):
         """Return the list of search hits for `search_term`."""
         params = {"q": search_term, "per_page": per_page}
-        return self._get("/search", params=params)["hits"]
+        return self._get("/search", params=params)["response"]["hits"]
 
     def get_artist_id(self, search_term):
         """
@@ -82,7 +82,7 @@ class Genius:
     @staticmethod
     def _artist_row(search_term, artist_json):
         """Flatten the artist JSON into a single row for a DataFrame."""
-        artist = artist_json.get("artist", {})
+        artist = artist_json.get("response", {}).get("artist", {})
         return {
             "search_term": search_term,
             "artist_name": artist.get("name"),
