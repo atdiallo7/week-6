@@ -1,5 +1,22 @@
+"""
+A client for the Genius API.
+
+As a module, this file only defines the `Genius` class and has no side
+effects on import:
+
+    from apputil import Genius
+
+As a script, it loads ACCESS_TOKEN from the `.env` file and prints artist
+information for a few example search terms:
+
+    python apputil.py
+"""
+
+import os
+
 import requests
 import pandas as pd
+from dotenv import load_dotenv
 
 
 class Genius:
@@ -82,3 +99,14 @@ class Genius:
                 for term in search_terms]
         return pd.DataFrame(rows, columns=["search_term", "artist_name",
                                            "artist_id", "followers_count"])
+
+
+def main():
+    """Run a demo of the Genius client using the token in `.env`."""
+    load_dotenv()
+    genius = Genius(access_token=os.environ["ACCESS_TOKEN"])
+    print(genius.get_artists(["Rihanna", "Tycho", "Seal", "U2"]))
+
+
+if __name__ == "__main__":
+    main()
